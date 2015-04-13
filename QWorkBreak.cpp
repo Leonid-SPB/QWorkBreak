@@ -1,12 +1,13 @@
 #include <QIcon>
 #include <QApplication>
+#include <QtDebug>
 #include <stdexcept>
 
 #include "QWorkBreak.hpp"
 #include "resource.hpp"
 
 QWorkBreak::QWorkBreak(QWidget *parent)
-    : QSystemTrayIcon(parent), pAboutBox_(nullptr), pNotificationBox_(nullptr)
+    : QSystemTrayIcon(parent), pAboutBox_(nullptr), pNotificationBox_(nullptr), pBreakProgressBox_(nullptr)
 {
     // setup tray icon
     QPixmap pm(IconPath);
@@ -22,14 +23,24 @@ QWorkBreak::QWorkBreak(QWidget *parent)
                                  tr("QWorkBreak v0.2 x86/win32\nAn open source minimalist Qt based work break reminder"), QMessageBox::Close, nullptr,
                                  Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint |
                                  Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
+    pAboutBox_->setModal(false);
+
 
     // create notification pop-up
     pNotificationBox_ = new QMessageBox(QMessageBox::Warning, tr("Time to break!"),
                                  tr("It's time to take a break ;-)              "), QMessageBox::Cancel | QMessageBox::Ok, nullptr,
                                  Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint |
                                  Qt::WindowMinimizeButtonHint);
-    connect(pNotificationBox_, SIGNAL(accepted()), this, SLOT(onBreakAccepted()));
-    connect(pNotificationBox_, SIGNAL(rejected()), this, SLOT(onBreakRejected()));
+    //pNotificationBox_->setModal(false);
+    connect(pNotificationBox_, SIGNAL(finished(int)), this, SLOT(onBreakNotificationClosed(int)));
+
+    // create work break progress box
+    pBreakProgressBox_ = new BreakProgressBox();
+    //pBreakProgressBox_->setModal(false);
+    connect(pBreakProgressBox_, SIGNAL(breakFinished()), this, SLOT(onReset()));
+
+    // create settings box
+    pSettingsDialog = new SettingsDialog();
 
     // setup context menu
     myMenu_.addAction(tr("Stop"), this, SLOT(onStop()));
@@ -51,8 +62,10 @@ QWorkBreak::QWorkBreak(QWidget *parent)
 }
 
 QWorkBreak::~QWorkBreak() {
+    myTimer_.stop();
     delete pAboutBox_;
     delete pNotificationBox_;
+    delete pBreakProgressBox_;
 }
 
 void QWorkBreak::onQuit() {
@@ -60,6 +73,7 @@ void QWorkBreak::onQuit() {
 }
 
 void QWorkBreak::onStop() {
+    qDebug() << "onStop()";
     myTimer_.stop();
 
     closeNotificationWindows();
@@ -70,6 +84,7 @@ void QWorkBreak::onReset() {
 
     //reset timer
     int t = settings_.value(SettingBreakInterval, SettingBreakDurationDefVal).toInt();
+    Q_ASSERT(t > 0);
     myTimer_.start(t);
 }
 
@@ -77,6 +92,9 @@ void QWorkBreak::onSettings() {
     closeNotificationWindows();
 
     //show settings dialog
+    pSettingsDialog->show();
+    pSettingsDialog->raise();
+    pSettingsDialog->activateWindow();
 }
 
 void QWorkBreak::onTimeout() {
@@ -84,27 +102,34 @@ void QWorkBreak::onTimeout() {
 
     pNotificationBox_->show();
     pNotificationBox_->raise();
-    pNotificationBox_->setFocus(Qt::PopupFocusReason);
+    pNotificationBox_->activateWindow();
  }
 
 void QWorkBreak::onAbout() {
     pAboutBox_->show();
     pAboutBox_->raise();
-    pAboutBox_->setFocus(Qt::PopupFocusReason);
+    pAboutBox_->activateWindow();
 }
 
-void QWorkBreak::onBreakAccepted() {
-    // show break time progress bar
-    // then restart timer
-}
+void QWorkBreak::onBreakNotificationClosed(int res) {
+    qDebug() << "onBreakNotificationClosed()" << res;
 
-void QWorkBreak::onBreakRejected() {
-    // just restart timer
-    onReset();
+    if (res == QMessageBox::Ok) {
+        // show break time progress bar
+        qDebug() << "break accepted";
+        pBreakProgressBox_->show();
+        pBreakProgressBox_->raise();
+        pBreakProgressBox_->activateWindow();
+    } else {
+        // just restart timer
+        qDebug() << "break rejected";
+        onReset();
+    }
 }
 
 void QWorkBreak::closeNotificationWindows() {
     pAboutBox_->hide();
     pNotificationBox_->hide();
+    pBreakProgressBox_->hide();
 
 }

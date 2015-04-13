@@ -6,6 +6,8 @@
 #include <QSettings>
 #include <QTimer>
 
+#include "BreakProgressBox.hpp"
+#include "SettingsDialog.hpp"
 
 class QWorkBreak : public QSystemTrayIcon {
     Q_OBJECT
@@ -14,6 +16,8 @@ class QWorkBreak : public QSystemTrayIcon {
     QMenu myMenu_;
     QMessageBox *pAboutBox_;
     QMessageBox *pNotificationBox_;
+    BreakProgressBox *pBreakProgressBox_;
+    SettingsDialog *pSettingsDialog;
 
     QTimer myTimer_;
 
@@ -34,8 +38,7 @@ private slots:
     void onAbout();
 
     // break notification actions
-    void onBreakAccepted();
-    void onBreakRejected();
+    void onBreakNotificationClosed(int res);
 
     // break timer expired
     void onTimeout();
