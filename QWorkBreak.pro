@@ -19,3 +19,5 @@ HEADERS  += QWorkBreak.hpp\
             resource.hpp
 
 RESOURCES += resource.qrc
+
+RC_ICONS = res/myappicon.ico

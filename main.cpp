@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
         w.setVisible(true);
         //w.showMessage(a.tr("Hi"), a.tr("Just Hi =)"));
 
+        a.setQuitOnLastWindowClosed(false);
         return a.exec();
     } catch (std::runtime_error &e) {
         qDebug() << "Something wrong happened: " << e.what();

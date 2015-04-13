@@ -1,0 +1,1 @@
+Icon by Aleksandra Wolska, http://olawolska.com/, license: http://creativecommons.org/licenses/by-sa/3.0/
