@@ -20,6 +20,7 @@ class QWorkBreak : public QSystemTrayIcon {
     SettingsDialog *pSettingsDialog;
 
     QTimer myTimer_;
+    QTimer tooltipUpdateTimer_;
 
     QSettings settings_;
 public:
@@ -42,4 +43,8 @@ private slots:
 
     // break timer expired
     void onTimeout();
+
+    // tooltip related
+    void onTooltipUpdate();
+    void onActivatd(QSystemTrayIcon::ActivationReason reason);
 };

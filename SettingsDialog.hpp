@@ -21,4 +21,7 @@ public slots:
     virtual void show();
     virtual void accept();
     virtual void reject();
+
+signals:
+    void settingsChanged();
 };

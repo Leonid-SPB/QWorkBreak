@@ -1,10 +1,13 @@
 #include <QIcon>
 #include <QApplication>
 #include <QtDebug>
+#include <QTime>
 #include <stdexcept>
 
 #include "QWorkBreak.hpp"
 #include "resource.hpp"
+
+const int TooltipUpdateInterval = 10 * 1000; //ms
 
 QWorkBreak::QWorkBreak(QWidget *parent)
     : QSystemTrayIcon(parent), pAboutBox_(nullptr), pNotificationBox_(nullptr), pBreakProgressBox_(nullptr)
@@ -41,6 +44,7 @@ QWorkBreak::QWorkBreak(QWidget *parent)
 
     // create settings box
     pSettingsDialog = new SettingsDialog();
+    connect(pSettingsDialog, SIGNAL(settingsChanged()), this, SLOT(onReset()));
 
     // setup context menu
     myMenu_.addAction(tr("Stop"), this, SLOT(onStop()));
@@ -55,7 +59,8 @@ QWorkBreak::QWorkBreak(QWidget *parent)
     connect(&myTimer_, SIGNAL(timeout()), this, SLOT(onTimeout()));
 
     // setup tooltip
-    setToolTip(tr("QWorkBreak test tooltip"));
+    connect(&tooltipUpdateTimer_, SIGNAL(timeout()), this, SLOT(onTooltipUpdate()));
+    connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onActivatd(QSystemTrayIcon::ActivationReason)));
 
     // start timer
     onReset();
@@ -63,6 +68,7 @@ QWorkBreak::QWorkBreak(QWidget *parent)
 
 QWorkBreak::~QWorkBreak() {
     myTimer_.stop();
+    tooltipUpdateTimer_.stop();
     delete pAboutBox_;
     delete pNotificationBox_;
     delete pBreakProgressBox_;
@@ -75,7 +81,8 @@ void QWorkBreak::onQuit() {
 void QWorkBreak::onStop() {
     qDebug() << "onStop()";
     myTimer_.stop();
-
+    tooltipUpdateTimer_.stop();
+    onTooltipUpdate();
     closeNotificationWindows();
 }
 
@@ -86,6 +93,8 @@ void QWorkBreak::onReset() {
     int t = settings_.value(SettingBreakInterval, SettingBreakDurationDefVal).toInt();
     Q_ASSERT(t > 0);
     myTimer_.start(t);
+    tooltipUpdateTimer_.start(TooltipUpdateInterval);
+    onTooltipUpdate();
 }
 
 void QWorkBreak::onSettings() {
@@ -99,6 +108,7 @@ void QWorkBreak::onSettings() {
 
 void QWorkBreak::onTimeout() {
     myTimer_.stop();
+    tooltipUpdateTimer_.stop();
 
     pNotificationBox_->show();
     pNotificationBox_->raise();
@@ -132,4 +142,28 @@ void QWorkBreak::closeNotificationWindows() {
     pNotificationBox_->hide();
     pBreakProgressBox_->hide();
 
+}
+
+void QWorkBreak::onActivatd(QSystemTrayIcon::ActivationReason reason) {
+    if (reason == QSystemTrayIcon::Unknown) {
+        qDebug() << "Activated, unknown";
+    } else if (reason == QSystemTrayIcon::Trigger) {
+        qDebug() << "Activated, click";
+    }
+    onTooltipUpdate();
+}
+
+void QWorkBreak::onTooltipUpdate() {
+    int timeLeft = myTimer_.remainingTime();
+    if (timeLeft == -1) { // timer inactive
+        setToolTip(tr("Work break reminder stopped"));
+    } else {
+        int timePassed = myTimer_.interval() - timeLeft;
+        static const QString tooltipFormat(tr("Time to break %1\nTime passed %2"));
+        static const QString timeFormat("hh:mm:ss");
+        QString tooltip = tooltipFormat.
+                            arg(QTime::fromMSecsSinceStartOfDay(timeLeft).toString(timeFormat)).
+                            arg(QTime::fromMSecsSinceStartOfDay(timePassed).toString(timeFormat));
+        setToolTip(tooltip);
+    }
 }

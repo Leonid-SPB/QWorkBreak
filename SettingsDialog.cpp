@@ -54,6 +54,7 @@ void SettingsDialog::accept() {
     settings_.setValue(SettingResetOnDesktopLocked, QVariant::fromValue(ui->ResetOnLockChk->isChecked()));
 
     QDialog::accept();
+    emit settingsChanged();
 }
 
 void SettingsDialog::reject() {
