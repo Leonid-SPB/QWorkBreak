@@ -10,7 +10,7 @@
 const int TooltipUpdateInterval = 10 * 1000; //ms
 
 QWorkBreak::QWorkBreak(QWidget *parent)
-    : QSystemTrayIcon(parent), pAboutBox_(nullptr), pNotificationBox_(nullptr), pBreakProgressBox_(nullptr)
+    : QSystemTrayIcon(parent), pAboutBox_(nullptr), pBreakNotification_(nullptr), pBreakProgressBox_(nullptr)
 {
     // setup tray icon
     QPixmap pm(IconPath);
@@ -30,16 +30,13 @@ QWorkBreak::QWorkBreak(QWidget *parent)
 
 
     // create notification pop-up
-    pNotificationBox_ = new QMessageBox(QMessageBox::Warning, tr("Time to break!"),
-                                 tr("It's time to take a break ;-)              "), QMessageBox::Cancel | QMessageBox::Ok, nullptr,
-                                 Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint | Qt::WindowStaysOnTopHint |
-                                 Qt::WindowMinimizeButtonHint);
-    //pNotificationBox_->setModal(false);
-    connect(pNotificationBox_, SIGNAL(finished(int)), this, SLOT(onBreakNotificationClosed(int)));
+    pBreakNotification_ = new BreakNotification();
+    pBreakNotification_->setModal(false);
+    connect(pBreakNotification_, SIGNAL(finished(int)), this, SLOT(onBreakNotificationClosed(int)));
 
     // create work break progress box
     pBreakProgressBox_ = new BreakProgressBox();
-    //pBreakProgressBox_->setModal(false);
+    pBreakProgressBox_->setModal(false);
     connect(pBreakProgressBox_, SIGNAL(breakFinished()), this, SLOT(onReset()));
 
     // create settings box
@@ -70,7 +67,7 @@ QWorkBreak::~QWorkBreak() {
     myTimer_.stop();
     tooltipUpdateTimer_.stop();
     delete pAboutBox_;
-    delete pNotificationBox_;
+    delete pBreakNotification_;
     delete pBreakProgressBox_;
 }
 
@@ -87,6 +84,7 @@ void QWorkBreak::onStop() {
 }
 
 void QWorkBreak::onReset() {
+    qDebug() << "onReset()";
     closeNotificationWindows();
 
     //reset timer
@@ -107,12 +105,13 @@ void QWorkBreak::onSettings() {
 }
 
 void QWorkBreak::onTimeout() {
+    qDebug() << "onTimeout()";
     myTimer_.stop();
     tooltipUpdateTimer_.stop();
 
-    pNotificationBox_->show();
-    pNotificationBox_->raise();
-    pNotificationBox_->activateWindow();
+    pBreakNotification_->show();
+    pBreakNotification_->raise();
+    pBreakNotification_->activateWindow();
  }
 
 void QWorkBreak::onAbout() {
@@ -124,13 +123,22 @@ void QWorkBreak::onAbout() {
 void QWorkBreak::onBreakNotificationClosed(int res) {
     qDebug() << "onBreakNotificationClosed()" << res;
 
-    if (res == QMessageBox::Ok) {
+    if (res == BreakNotification::Accepted) {
         // show break time progress bar
         qDebug() << "break accepted";
         pBreakProgressBox_->show();
         pBreakProgressBox_->raise();
         pBreakProgressBox_->activateWindow();
-    } else {
+    } else if (res == BreakNotification::Postponed) {
+        // restart timer with postpone timeout
+        qDebug() << "break postponed";
+        int t = settings_.value(SettingPostponeTime, SettingPostponeTimeDefVal).toInt();
+        Q_ASSERT(t > 0);
+
+        myTimer_.start(t);
+        tooltipUpdateTimer_.start(TooltipUpdateInterval);
+        onTooltipUpdate();
+    } else if (res == BreakNotification::Rejected) {
         // just restart timer
         qDebug() << "break rejected";
         onReset();
@@ -139,7 +147,7 @@ void QWorkBreak::onBreakNotificationClosed(int res) {
 
 void QWorkBreak::closeNotificationWindows() {
     pAboutBox_->hide();
-    pNotificationBox_->hide();
+    pBreakNotification_->hide();
     pBreakProgressBox_->hide();
 
 }

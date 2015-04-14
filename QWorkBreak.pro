@@ -15,12 +15,14 @@ TEMPLATE = app
 SOURCES += main.cpp\
         QWorkBreak.cpp \
     BreakProgressBox.cpp \
-    SettingsDialog.cpp
+    SettingsDialog.cpp \
+    BreakNotification.cpp
 
 HEADERS  += QWorkBreak.hpp\
             resource.hpp \
     BreakProgressBox.hpp \
-    SettingsDialog.hpp
+    SettingsDialog.hpp \
+    BreakNotification.hpp
 
 RESOURCES += resource.qrc
 
@@ -28,4 +30,5 @@ RC_ICONS = res/myappicon.ico
 
 FORMS += \
     BreakProgressBox.ui \
-    SettingsDialog.ui
+    SettingsDialog.ui \
+    BreakNotification.ui
