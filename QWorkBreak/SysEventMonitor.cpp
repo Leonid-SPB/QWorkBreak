@@ -5,7 +5,7 @@
 
 namespace {
 // window identificator for receiving system event notifications
-const char SysEventMonitor::WindowGuid[] = "QWorkBreak::SysEventMonitor::63e3c948-0472-4b7b-98ef-3e7c81cd5d08";
+const char WindowGuid[] = "QWorkBreak::SysEventMonitor::63e3c948-0472-4b7b-98ef-3e7c81cd5d08";
 
 #ifdef _WIN32
 enum SysEventMessages {
