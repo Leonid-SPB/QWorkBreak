@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>res/timer.png</file>
+        <file>res/readme.txt</file>
     </qresource>
 </RCC>

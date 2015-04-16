@@ -16,13 +16,15 @@ SOURCES += main.cpp\
         QWorkBreak.cpp \
     BreakProgressBox.cpp \
     SettingsDialog.cpp \
-    BreakNotification.cpp
+    BreakNotification.cpp \
+    SysEventMonitor.cpp
 
 HEADERS  += QWorkBreak.hpp\
             resource.hpp \
     BreakProgressBox.hpp \
     SettingsDialog.hpp \
-    BreakNotification.hpp
+    BreakNotification.hpp \
+    SysEventMonitor.hpp
 
 RESOURCES += resource.qrc
 
@@ -32,3 +34,5 @@ FORMS += \
     BreakProgressBox.ui \
     SettingsDialog.ui \
     BreakNotification.ui
+
+CONFIG += c++11

@@ -17,7 +17,6 @@ BreakProgressBox::~BreakProgressBox() {
 }
 
 void BreakProgressBox::show() {
-    qDebug() << "BreakProgressBox::show()";
     int duration_sec = settings_.value(SettingBreakDuration, SettingBreakDurationDefVal).toInt() / 1000;
     Q_ASSERT(duration_sec > 0);
 
@@ -32,7 +31,6 @@ void BreakProgressBox::show() {
 
 void BreakProgressBox::hide() {
     if (isVisible()) {
-        qDebug() << "BreakProgressBox::hide()";
         QDialog::hide();
         progressUpdateTimer_.stop();
         emit breakFinished();
@@ -46,7 +44,6 @@ void BreakProgressBox::onProgressUpdate(){
         ui->progressBar->setValue(val);
         return;
     } else { // work break finished
-        qDebug() << "Work break finished";
         hide();
     }
 }

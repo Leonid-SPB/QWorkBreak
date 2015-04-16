@@ -7,10 +7,12 @@
 #include "QWorkBreak.hpp"
 #include "resource.hpp"
 
+namespace {
 const int TooltipUpdateInterval = 10 * 1000; //ms
+}
 
 QWorkBreak::QWorkBreak(QWidget *parent)
-    : QSystemTrayIcon(parent), pAboutBox_(nullptr), pBreakNotification_(nullptr), pBreakProgressBox_(nullptr)
+    : QSystemTrayIcon(parent)
 {
     // setup tray icon
     QPixmap pm(IconPath);
@@ -26,7 +28,6 @@ QWorkBreak::QWorkBreak(QWidget *parent)
                                  tr("QWorkBreak v0.2 x86/win32\nAn open source minimalist Qt based work break reminder"), QMessageBox::Close, nullptr,
                                  Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint |
                                  Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
-    pAboutBox_->setModal(false);
 
 
     // create notification pop-up
@@ -37,7 +38,7 @@ QWorkBreak::QWorkBreak(QWidget *parent)
     // create work break progress box
     pBreakProgressBox_ = new BreakProgressBox();
     pBreakProgressBox_->setModal(false);
-    connect(pBreakProgressBox_, SIGNAL(breakFinished()), this, SLOT(onReset()));
+    connect(pBreakProgressBox_, SIGNAL(breakFinished()), this, SLOT(onWorkBreakFinished()));
 
     // create settings box
     pSettingsDialog = new SettingsDialog();
@@ -76,7 +77,6 @@ void QWorkBreak::onQuit() {
 }
 
 void QWorkBreak::onStop() {
-    qDebug() << "onStop()";
     myTimer_.stop();
     tooltipUpdateTimer_.stop();
     onTooltipUpdate();
@@ -84,15 +84,12 @@ void QWorkBreak::onStop() {
 }
 
 void QWorkBreak::onReset() {
-    qDebug() << "onReset()";
     closeNotificationWindows();
 
     //reset timer
     int t = settings_.value(SettingBreakInterval, SettingBreakDurationDefVal).toInt();
     Q_ASSERT(t > 0);
-    myTimer_.start(t);
-    tooltipUpdateTimer_.start(TooltipUpdateInterval);
-    onTooltipUpdate();
+    restartTimer(t);
 }
 
 void QWorkBreak::onSettings() {
@@ -104,8 +101,22 @@ void QWorkBreak::onSettings() {
     pSettingsDialog->activateWindow();
 }
 
+void QWorkBreak::onWorkBreakFinished() {
+    static const QString TimeFormat("hh:mm:ss");
+    static const QString Message(tr("Next work break in %1"));
+
+    closeNotificationWindows();
+
+    //reset timer
+    int t = settings_.value(SettingBreakInterval, SettingBreakDurationDefVal).toInt();
+    Q_ASSERT(t > 0);
+    restartTimer(t);
+
+    QString msg = TimeFormat.arg(QTime::fromMSecsSinceStartOfDay(t).toString(TimeFormat));
+    showMessage(tr("Work break finished"), msg);
+}
+
 void QWorkBreak::onTimeout() {
-    qDebug() << "onTimeout()";
     myTimer_.stop();
     tooltipUpdateTimer_.stop();
 
@@ -120,28 +131,43 @@ void QWorkBreak::onAbout() {
     pAboutBox_->activateWindow();
 }
 
+void QWorkBreak::restartTimer(int timeOutMs) {
+    Q_ASSERT(timeOutMs > 0);
+
+    myTimer_.start(timeOutMs);
+    tooltipUpdateTimer_.start(TooltipUpdateInterval);
+    onTooltipUpdate();
+}
+
 void QWorkBreak::onBreakNotificationClosed(int res) {
-    qDebug() << "onBreakNotificationClosed()" << res;
+    static const QString TimeFormat("hh:mm:ss");
+    static const QString Message(tr("Next work break in %1"));
 
     if (res == BreakNotification::Accepted) {
         // show break time progress bar
-        qDebug() << "break accepted";
         pBreakProgressBox_->show();
         pBreakProgressBox_->raise();
         pBreakProgressBox_->activateWindow();
     } else if (res == BreakNotification::Postponed) {
         // restart timer with postpone timeout
-        qDebug() << "break postponed";
         int t = settings_.value(SettingPostponeTime, SettingPostponeTimeDefVal).toInt();
         Q_ASSERT(t > 0);
+        restartTimer(t);
 
-        myTimer_.start(t);
-        tooltipUpdateTimer_.start(TooltipUpdateInterval);
-        onTooltipUpdate();
+        QString msg = TimeFormat.arg(QTime::fromMSecsSinceStartOfDay(t).toString(TimeFormat));
+        showMessage(tr("Work break postponed"), msg);
     } else if (res == BreakNotification::Rejected) {
-        // just restart timer
-        qDebug() << "break rejected";
-        onReset();
+        // restart timer with random timeout
+
+        //calc max random
+        const int MSecInMinute = 60 * 1000;
+        int rangeMinutes = (MaxWorkBreakInterval - MinWorkBreakInterval) / MSecInMinute;
+        Q_ASSERT(rangeMinutes > 0);
+        int timeToBreak = MinWorkBreakInterval + (qrand() % rangeMinutes) * MSecInMinute;
+        restartTimer(timeToBreak);
+
+        QString msg = TimeFormat.arg(QTime::fromMSecsSinceStartOfDay(timeToBreak).toString(TimeFormat));
+        showMessage(tr("Work break ignored"), msg);
     }
 }
 
@@ -154,9 +180,7 @@ void QWorkBreak::closeNotificationWindows() {
 
 void QWorkBreak::onActivatd(QSystemTrayIcon::ActivationReason reason) {
     if (reason == QSystemTrayIcon::Unknown) {
-        qDebug() << "Activated, unknown";
     } else if (reason == QSystemTrayIcon::Trigger) {
-        qDebug() << "Activated, click";
     }
     onTooltipUpdate();
 }

@@ -1,1 +1,34 @@
-Icon by Aleksandra Wolska, http://olawolska.com/, license: http://creativecommons.org/licenses/by-sa/3.0/
+Overview
+============
+QWorkBreak v1.0 is an open source minimalist Qt based work break reminder utility.
+
+QWorkBreak shows a work break reminder notification pop-up every hour.
+If user accepts the work break, he will see 5-minute long work break progress bar.
+During this time user is encouraged to do some excersises, take a cup of tea/coffe or just walk around.
+User can postpone work break for a 5 minutes if he is really busy or ignore it
+(but notification reappear after some random period of time).
+
+If the user leaves workstation and locks it, QWorkBreak will suspend notifications.
+When user returns and unlocks workstation, QWorkBreak will restart notification timer (so the next notification
+will appear in one hour).
+
+License
+============
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; version 3 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>
+
+
+Credits
+============
+Code by Leonid Azarenkov, < leonid AT rezonics DOT com >
+Timer icon by Aleksandra Wolska, http://olawolska.com/

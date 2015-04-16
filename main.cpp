@@ -4,8 +4,10 @@
 #include <QMessageBox>
 #include <stdexcept>
 #include <cstdlib>
+#include <ctime>
 
 #include "QWorkBreak.hpp"
+#include "SysEventMonitor.hpp"
 #include "resource.hpp"
 
 int main(int argc, char *argv[]) {
@@ -15,11 +17,18 @@ int main(int argc, char *argv[]) {
     QCoreApplication::setOrganizationDomain(OrganizationDomain);
     QCoreApplication::setApplicationName(ApplicationName);
 
+    qsrand(time(0));
+
     try {
         QWorkBreak w;
-        w.setVisible(true);
-        //w.showMessage(a.tr("Hi"), a.tr("Just Hi =)"));
+        SysEventMonitor m;
 
+        QObject::connect(&m, SIGNAL(desktopLocked()), &w, SLOT(onStop()));
+        QObject::connect(&m, SIGNAL(screensaverStarted()), &w, SLOT(onStop()));
+        QObject::connect(&m, SIGNAL(desktopUnlocked()), &w, SLOT(onReset()));
+        QObject::connect(&m, SIGNAL(screensaverStopped()), &w, SLOT(onReset()));
+
+        w.setVisible(true);
         a.setQuitOnLastWindowClosed(false);
         return a.exec();
     } catch (std::runtime_error &e) {
@@ -31,3 +40,4 @@ int main(int argc, char *argv[]) {
     QMessageBox::critical(nullptr, QCoreApplication::tr("Runtime error"), QCoreApplication::tr("Something went wrong, sorry :-("));
     exit(1);
 }
+

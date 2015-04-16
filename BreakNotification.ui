@@ -39,14 +39,14 @@
     <item>
      <widget class="QPushButton" name="pushButtonPostpone">
       <property name="text">
-       <string>Postpone</string>
+       <string>Postpone, 5 min</string>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="pushButtonCancel">
       <property name="text">
-       <string>Cancel</string>
+       <string>Ignore</string>
       </property>
      </widget>
     </item>

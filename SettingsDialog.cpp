@@ -24,14 +24,14 @@ SettingsDialog::~SettingsDialog() {
 
 void SettingsDialog::show() {
     //update gui
-    qDebug() << "SettingsDialog::show()";
-
     int intervalMsec = settings_.value(SettingBreakInterval, SettingBreakIntervalDefVal).toInt();
-    Q_ASSERT(intervalMsec > 1000);
+    Q_ASSERT(intervalMsec >= MinWorkBreakInterval);
+    Q_ASSERT(intervalMsec <= MaxWorkBreakInterval);
     ui->IntervalTimeEdit->setTime(QTime::fromMSecsSinceStartOfDay(intervalMsec));
 
     int durationMsec = settings_.value(SettingBreakDuration, SettingBreakDurationDefVal).toInt();
-    Q_ASSERT(durationMsec > 1000);
+    Q_ASSERT(durationMsec >= MinWorkBreakDuration);
+    Q_ASSERT(durationMsec <= MaxWorkBreakDuration);
     ui->DurationTimeEdit->setTime(QTime::fromMSecsSinceStartOfDay(durationMsec));
 
     bool rstOnLock = settings_.value(SettingResetOnDesktopLocked, SettingResetOnDesktopLockedDefVal).toBool();
@@ -43,8 +43,6 @@ void SettingsDialog::show() {
 
 void SettingsDialog::accept() {
     //save settings
-    qDebug() << "SettingsDialog::update settings";
-
     int intervalMsec = std::max(ui->IntervalTimeEdit->time().msecsSinceStartOfDay(), MinWorkBreakInterval);
     settings_.setValue(SettingBreakInterval, QVariant::fromValue(intervalMsec));
 
@@ -58,6 +56,5 @@ void SettingsDialog::accept() {
 }
 
 void SettingsDialog::reject() {
-    qDebug() << "SettingsDialog::reject settings";
     QDialog::reject();
 }

@@ -30,6 +30,7 @@ public:
 
 private:
     void closeNotificationWindows();
+    void restartTimer(int timeOutMs);
 
 private slots:
     // context menu actions
@@ -41,6 +42,7 @@ private slots:
 
     // break notification actions
     void onBreakNotificationClosed(int res);
+    void onWorkBreakFinished();
 
     // break timer expired
     void onTimeout();
