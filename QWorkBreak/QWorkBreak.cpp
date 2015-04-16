@@ -25,7 +25,7 @@ QWorkBreak::QWorkBreak(QWidget *parent)
     // create about pop-up
     /*@todo use version info const*/
     pAboutBox_ = new QMessageBox(QMessageBox::Information, tr("About"),
-                                 tr("QWorkBreak v0.2 x86/win32\nAn open source minimalist Qt based work break reminder"), QMessageBox::Close, nullptr,
+                                 tr("QWorkBreak v1.0\nAn open source minimalist Qt based work break reminder utility"), QMessageBox::Close, nullptr,
                                  Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint |
                                  Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 
