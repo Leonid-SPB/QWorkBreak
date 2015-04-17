@@ -25,8 +25,12 @@ int main(int argc, char *argv[]) {
 
         QObject::connect(&m, SIGNAL(desktopLocked()), &w, SLOT(onStop()));
         QObject::connect(&m, SIGNAL(screensaverStarted()), &w, SLOT(onStop()));
+        QObject::connect(&m, SIGNAL(powerModeSuspended()), &w, SLOT(onStop()));
         QObject::connect(&m, SIGNAL(desktopUnlocked()), &w, SLOT(onReset()));
         QObject::connect(&m, SIGNAL(screensaverStopped()), &w, SLOT(onReset()));
+        QObject::connect(&m, SIGNAL(powerModeResumed()), &w, SLOT(onReset()));
+
+        m.createWinId();
 
         w.setVisible(true);
         a.setQuitOnLastWindowClosed(false);

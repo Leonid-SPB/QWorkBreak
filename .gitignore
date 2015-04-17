@@ -33,4 +33,9 @@ Makefile*
 *.qmlproject.user
 *.qmlproject.user.*
 
+#Visual Studio
+*.suo
+bin/
+obj/
+
 /build-*

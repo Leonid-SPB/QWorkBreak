@@ -1,4 +1,5 @@
 #include "SysEventMonitor.hpp"
+#include <QDebug>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -12,7 +13,9 @@ enum SysEventMessages {
     DesktopLock      = WM_USER + 0,
     DesktopUnlock    = WM_USER + 1,
     StartScreenSaver = WM_USER + 2,
-    StopScreenSaver  = WM_USER + 3
+    StopScreenSaver  = WM_USER + 3,
+    PowerModeSusped  = WM_USER + 4,
+    PowerModeResume  = WM_USER + 5
 };
 #endif
 }
@@ -34,13 +37,23 @@ bool SysEventMonitor::nativeEvent(const QByteArray & eventType, void * message, 
         const MSG * const pMsg = static_cast<const MSG * const>(message);
 
         if (pMsg->message == SysEventMessages::DesktopLock) {
+            qDebug() << "SysEventMonitor::desktopLocked()";
             emit desktopLocked();
         } else if (pMsg->message == SysEventMessages::DesktopUnlock) {
+            qDebug() << "SysEventMonitor::desktopUnlocked()";
             emit desktopUnlocked();
         } else if (pMsg->message == SysEventMessages::StartScreenSaver) {
+            qDebug() << "SysEventMonitor::screensaverStarted()";
             emit screensaverStarted();
         } else if (pMsg->message == SysEventMessages::StopScreenSaver) {
+            qDebug() << "SysEventMonitor::screensaverStopped()";
             emit screensaverStopped();
+        } else if (pMsg->message == SysEventMessages::PowerModeSusped) {
+            qDebug() << "SysEventMonitor::powerModeSuspended()";
+            emit powerModeSuspended();
+        } else if (pMsg->message == SysEventMessages::PowerModeResume) {
+            qDebug() << "SysEventMonitor::powerModeResumed()";
+            emit powerModeResumed();
         } else {
             //unknown message
             return false;

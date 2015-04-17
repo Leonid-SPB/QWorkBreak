@@ -23,6 +23,8 @@ signals:
     void desktopUnlocked();
     void screensaverStarted();
     void screensaverStopped();
+    void powerModeSuspended();
+    void powerModeResumed();
 
     //void fullscreenModeAppStarted();
     //void fullscreenModeAppStopped();
