@@ -154,7 +154,7 @@ void QWorkBreak::onBreakNotificationClosed(int res) {
         Q_ASSERT(t > 0);
         restartTimer(t);
 
-        QString msg = TimeFormat.arg(QTime::fromMSecsSinceStartOfDay(t).toString(TimeFormat));
+        QString msg = Message.arg(QTime::fromMSecsSinceStartOfDay(t).toString(TimeFormat));
         showMessage(tr("Work break postponed"), msg);
     } else if (res == BreakNotification::Rejected) {
         // restart timer with random timeout
@@ -166,7 +166,7 @@ void QWorkBreak::onBreakNotificationClosed(int res) {
         int timeToBreak = MinWorkBreakInterval + (qrand() % rangeMinutes) * MSecInMinute;
         restartTimer(timeToBreak);
 
-        QString msg = TimeFormat.arg(QTime::fromMSecsSinceStartOfDay(timeToBreak).toString(TimeFormat));
+        QString msg = Message.arg(QTime::fromMSecsSinceStartOfDay(timeToBreak).toString(TimeFormat));
         showMessage(tr("Work break ignored"), msg);
     }
 }

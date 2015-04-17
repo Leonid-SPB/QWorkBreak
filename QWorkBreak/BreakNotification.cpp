@@ -6,6 +6,7 @@ BreakNotification::BreakNotification(QWidget *parent) :
     ui(new Ui::BreakNotification)
 {
     ui->setupUi(this);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 }
 
 BreakNotification::~BreakNotification() {
