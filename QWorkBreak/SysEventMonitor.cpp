@@ -8,6 +8,8 @@ namespace {
 // window identificator for receiving system event notifications
 const char WindowGuid[] = "QWorkBreak::SysEventMonitor::63e3c948-0472-4b7b-98ef-3e7c81cd5d08";
 
+const char SysEventProviderSvcPath[] = "SysEventNotificationProvider.exe";
+
 #ifdef _WIN32
 enum SysEventMessages {
     DesktopLock      = WM_USER + 0,
@@ -21,12 +23,24 @@ enum SysEventMessages {
 }
 
 SysEventMonitor::SysEventMonitor(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), sysEventProviderSvc(this)
 {
+#ifdef _WIN32
     setWindowTitle(WindowGuid);
+#endif
 }
 
 SysEventMonitor::~SysEventMonitor() {
+#ifdef _WIN32
+    sysEventProviderSvc.terminate();
+#endif
+}
+
+void SysEventMonitor::init() {
+#ifdef _WIN32
+    createWinId();
+    sysEventProviderSvc.start(SysEventProviderSvcPath);
+#endif
 }
 
 bool SysEventMonitor::nativeEvent(const QByteArray & eventType, void * message, long * result) {
@@ -70,4 +84,9 @@ bool SysEventMonitor::nativeEvent(const QByteArray & eventType, void * message, 
 
     //not our message
     return false;
+}
+
+void SysEventMonitor::onProcessError(QProcess::ProcessError error) {
+    Q_UNUSED(error);
+    qDebug() << "SysEventMonitor::something wrong with SysEventProviderSvc";
 }

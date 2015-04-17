@@ -34,9 +34,6 @@ void SettingsDialog::show() {
     Q_ASSERT(durationMsec <= MaxWorkBreakDuration);
     ui->DurationTimeEdit->setTime(QTime::fromMSecsSinceStartOfDay(durationMsec));
 
-    bool rstOnLock = settings_.value(SettingResetOnDesktopLocked, SettingResetOnDesktopLockedDefVal).toBool();
-    ui->ResetOnLockChk->setChecked(rstOnLock);
-
     update();
     QDialog::show();
 }
@@ -48,8 +45,6 @@ void SettingsDialog::accept() {
 
     int durationMsec = std::max(ui->DurationTimeEdit->time().msecsSinceStartOfDay(), MinWorkBreakDuration);
     settings_.setValue(SettingBreakDuration, QVariant::fromValue(durationMsec));
-
-    settings_.setValue(SettingResetOnDesktopLocked, QVariant::fromValue(ui->ResetOnLockChk->isChecked()));
 
     QDialog::accept();
     emit settingsChanged();
