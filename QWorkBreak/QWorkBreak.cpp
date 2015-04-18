@@ -161,8 +161,8 @@ void QWorkBreak::onBreakNotificationClosed(int res) {
 
         //calc max random
         const int MSecInMinute = 60 * 1000;
-        int rangeMinutes = (MaxWorkBreakInterval - MinWorkBreakInterval) / MSecInMinute;
-        Q_ASSERT(rangeMinutes > 0);
+        int workbreakInterval = settings_.value(SettingBreakInterval, SettingBreakDurationDefVal).toInt();
+        int rangeMinutes = std::max((workbreakInterval - MinWorkBreakInterval) / MSecInMinute, 1);
         int timeToBreak = MinWorkBreakInterval + (qrand() % rangeMinutes) * MSecInMinute;
         restartTimer(timeToBreak);
 

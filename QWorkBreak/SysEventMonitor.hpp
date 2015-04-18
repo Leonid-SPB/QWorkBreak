@@ -30,6 +30,8 @@ signals:
     void screensaverStopped();
     void powerModeSuspended();
     void powerModeResumed();
+    void displayPwrOff();
+    void displayPwrOn();
 
     //void fullscreenModeAppStarted();
     //void fullscreenModeAppStopped();

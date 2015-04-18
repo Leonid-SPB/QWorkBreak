@@ -68,11 +68,25 @@ bool SysEventMonitor::nativeEvent(const QByteArray & eventType, void * message, 
         } else if (pMsg->message == SysEventMessages::PowerModeResume) {
             qDebug() << "SysEventMonitor::powerModeResumed()";
             emit powerModeResumed();
+        } else if (pMsg->message == WM_SYSCOMMAND) {
+            if (pMsg->wParam == SC_MONITORPOWER) {
+                if (pMsg->lParam == -1) { //powering on
+                    qDebug() << "SysEventMonitor::displayPwrOn()";
+                    emit displayPwrOn();
+                } else if ((pMsg->lParam == 1) || (pMsg->lParam == 2)) {//low power mode or powered off
+                    qDebug() << "SysEventMonitor::powerModeResumed()";
+                    emit displayPwrOff();
+                }
+            }
+
+            //allow further processing
+            return false;
         } else {
-            //unknown message
+            //unknown message, allow further processing
             return false;
         }
 
+        //stop processing
         *result = 0;
         return true;
     }
@@ -82,7 +96,7 @@ bool SysEventMonitor::nativeEvent(const QByteArray & eventType, void * message, 
     Q_UNUSED(eventType);
 #endif
 
-    //not our message
+    //not our message, allow further processing
     return false;
 }
 
