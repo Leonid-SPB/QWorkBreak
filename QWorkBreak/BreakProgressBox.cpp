@@ -9,6 +9,7 @@ BreakProgressBox::BreakProgressBox(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(&progressUpdateTimer_, SIGNAL(timeout()), this, SLOT(onProgressUpdate()));
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 }
 
 BreakProgressBox::~BreakProgressBox() {
