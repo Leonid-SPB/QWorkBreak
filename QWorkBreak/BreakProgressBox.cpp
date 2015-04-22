@@ -13,7 +13,6 @@ BreakProgressBox::BreakProgressBox(QWidget *parent) :
 }
 
 BreakProgressBox::~BreakProgressBox() {
-    progressUpdateTimer_.stop();
     delete ui;
 }
 

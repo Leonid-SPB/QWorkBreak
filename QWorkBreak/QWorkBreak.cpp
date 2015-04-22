@@ -41,8 +41,8 @@ QWorkBreak::QWorkBreak(QWidget *parent)
     connect(pBreakProgressBox_, SIGNAL(breakFinished()), this, SLOT(onWorkBreakFinished()));
 
     // create settings box
-    pSettingsDialog = new SettingsDialog();
-    connect(pSettingsDialog, SIGNAL(settingsChanged()), this, SLOT(onReset()));
+    pSettingsDialog_ = new SettingsDialog();
+    connect(pSettingsDialog_, SIGNAL(settingsChanged()), this, SLOT(onReset()));
 
     // setup context menu
     myMenu_.addAction(tr("Stop"), this, SLOT(onStop()));
@@ -60,13 +60,22 @@ QWorkBreak::QWorkBreak(QWidget *parent)
     connect(&tooltipUpdateTimer_, SIGNAL(timeout()), this, SLOT(onTooltipUpdate()));
     connect(this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onActivatd(QSystemTrayIcon::ActivationReason)));
 
+    // setup event monitor
+    QObject::connect(&evtMon_, SIGNAL(desktopLocked()), this, SLOT(onStop()));
+    QObject::connect(&evtMon_, SIGNAL(screensaverStarted()), this, SLOT(onStop()));
+    QObject::connect(&evtMon_, SIGNAL(powerModeSuspended()), this, SLOT(onStop()));
+    QObject::connect(&evtMon_, SIGNAL(userStateInactive()), this, SLOT(onStop()));
+    QObject::connect(&evtMon_, SIGNAL(desktopUnlocked()), this, SLOT(onReset()));
+    QObject::connect(&evtMon_, SIGNAL(screensaverStopped()), this, SLOT(onReset()));
+    QObject::connect(&evtMon_, SIGNAL(powerModeResumed()), this, SLOT(onReset()));
+    QObject::connect(&evtMon_, SIGNAL(userStateActive()), this, SLOT(onReset()));
+    evtMon_.init();
+
     // start timer
     onReset();
 }
 
 QWorkBreak::~QWorkBreak() {
-    myTimer_.stop();
-    tooltipUpdateTimer_.stop();
     delete pAboutBox_;
     delete pBreakNotification_;
     delete pBreakProgressBox_;
@@ -96,9 +105,9 @@ void QWorkBreak::onSettings() {
     closeNotificationWindows();
 
     //show settings dialog
-    pSettingsDialog->show();
-    pSettingsDialog->raise();
-    pSettingsDialog->activateWindow();
+    pSettingsDialog_->show();
+    pSettingsDialog_->raise();
+    pSettingsDialog_->activateWindow();
 }
 
 void QWorkBreak::onWorkBreakFinished() {

@@ -9,6 +9,7 @@
 #include "BreakNotification.hpp"
 #include "BreakProgressBox.hpp"
 #include "SettingsDialog.hpp"
+#include "SysEventMonitor.hpp"
 
 class QWorkBreak : public QSystemTrayIcon {
     Q_OBJECT
@@ -18,12 +19,13 @@ class QWorkBreak : public QSystemTrayIcon {
     QMessageBox *pAboutBox_;
     BreakProgressBox *pBreakProgressBox_;
     BreakNotification *pBreakNotification_;
-    SettingsDialog *pSettingsDialog;
+    SettingsDialog *pSettingsDialog_;
 
     QTimer myTimer_;
     QTimer tooltipUpdateTimer_;
 
     QSettings settings_;
+    SysEventMonitor evtMon_;
 public:
     QWorkBreak(QWidget *parent = 0);
     ~QWorkBreak();

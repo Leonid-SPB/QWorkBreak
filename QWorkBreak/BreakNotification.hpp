@@ -24,7 +24,7 @@ private:
     Ui::BreakNotification *ui;
 
 public slots:
-    virtual void accept();
-    virtual void postpone();
-    virtual void reject();
+    void accept();
+    void reject();
+    void postpone();
 };

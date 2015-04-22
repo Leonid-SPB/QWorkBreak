@@ -21,19 +21,6 @@ int main(int argc, char *argv[]) {
 
     try {
         QWorkBreak w;
-        SysEventMonitor m;
-
-        QObject::connect(&m, SIGNAL(desktopLocked()), &w, SLOT(onStop()));
-        QObject::connect(&m, SIGNAL(screensaverStarted()), &w, SLOT(onStop()));
-        QObject::connect(&m, SIGNAL(powerModeSuspended()), &w, SLOT(onStop()));
-        QObject::connect(&m, SIGNAL(displayPwrOff()), &w, SLOT(onStop()));
-        QObject::connect(&m, SIGNAL(desktopUnlocked()), &w, SLOT(onReset()));
-        QObject::connect(&m, SIGNAL(screensaverStopped()), &w, SLOT(onReset()));
-        QObject::connect(&m, SIGNAL(powerModeResumed()), &w, SLOT(onReset()));
-        QObject::connect(&m, SIGNAL(displayPwrOn()), &w, SLOT(onReset()));
-
-        m.init();
-
         w.setVisible(true);
         a.setQuitOnLastWindowClosed(false);
         return a.exec();

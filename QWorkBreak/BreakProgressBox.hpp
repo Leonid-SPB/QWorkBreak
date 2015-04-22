@@ -26,8 +26,8 @@ signals:
     void breakFinished();
 
 public slots:
-    virtual void show();
-    virtual void hide();
+    void show();
+    void hide();
 
 private slots:
     void onProgressUpdate();

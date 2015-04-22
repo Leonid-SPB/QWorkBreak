@@ -18,9 +18,9 @@ private:
     QSettings settings_;
 
 public slots:
-    virtual void show();
-    virtual void accept();
-    virtual void reject();
+    void show();
+    void accept();
+    void reject();
 
 signals:
     void settingsChanged();

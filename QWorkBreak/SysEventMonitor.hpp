@@ -1,6 +1,8 @@
 #pragma once
 #include <QWidget>
 #include <QProcess>
+#include <QSettings>
+#include <QTimer>
 
 /** @brief SysEventMonitor provides notifications about following events:
  * desktop locked, desktop unlocked, screensaver started, screensaver stopped.
@@ -11,7 +13,10 @@
 class SysEventMonitor : public QWidget {
     Q_OBJECT
 
-    QProcess sysEventProviderSvc;
+    QProcess sysEventProviderSvc_;
+    QTimer myTimer_;
+    QSettings settings_;
+    bool activeState_;
 public:
 
     explicit SysEventMonitor(QWidget *parent = 0);
@@ -19,8 +24,11 @@ public:
 
     void init();
 
+    bool isFullScreenAppRunning();
+
 private:
-    bool nativeEvent(const QByteArray & eventType, void * message, long * result);
+    bool nativeEvent(const QByteArray & eventType, void * message, long * result) Q_DECL_OVERRIDE;
+    void restartTimer();
 
 signals:
     // System event notification signals
@@ -30,12 +38,10 @@ signals:
     void screensaverStopped();
     void powerModeSuspended();
     void powerModeResumed();
-    void displayPwrOff();
-    void displayPwrOn();
-
-    //void fullscreenModeAppStarted();
-    //void fullscreenModeAppStopped();
+    void userStateInactive();
+    void userStateActive();
 
 private slots:
     void onProcessError(QProcess::ProcessError error);
+    void onTimeout();
 };
