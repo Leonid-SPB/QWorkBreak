@@ -139,3 +139,46 @@ void SysEventMonitor::onTimeout() {
     }
 #endif
 }
+
+
+#ifdef _WIN32
+//code from http://stackoverflow.com/questions/3797802/how-to-check-if-an-other-program-is-running-in-fullscreen-mode-eg-a-media-play
+namespace {
+bool AreSameRECT(RECT& lhs, RECT& rhs) {
+    return   (lhs.bottom == rhs.bottom) && (lhs.left == lhs.left) &&
+             (lhs.right == rhs.right)   && (lhs.top == rhs.top);
+}
+
+
+bool IsFullscreenAndMaximized(HWND hWnd) {
+    RECT screen_bounds;
+    GetWindowRect(GetDesktopWindow(), &screen_bounds);
+
+    RECT app_bounds;
+    GetWindowRect(hWnd, &app_bounds);
+
+    if (hWnd != GetDesktopWindow() && hWnd != GetShellWindow()) {
+        return AreSameRECT(app_bounds, screen_bounds);
+    }
+
+    return false;
+}
+
+BOOL CALLBACK CheckFullScreenMode(HWND hwnd, LPARAM lParam) {
+    Q_UNUSED(hwnd);
+
+    if (IsFullscreenAndMaximized(GetForegroundWindow())) {
+        *reinterpret_cast<bool *>(lParam) = true;
+        return FALSE;
+    }
+    return TRUE;
+}
+
+}//namespace
+#endif
+
+bool SysEventMonitor::isFullScreenAppRunning() {
+    bool bThereIsAFullscreenWin = false;
+    EnumWindows(CheckFullScreenMode, reinterpret_cast<LPARAM>(&bThereIsAFullscreenWin));
+    return bThereIsAFullscreenWin;
+}

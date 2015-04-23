@@ -129,9 +129,16 @@ void QWorkBreak::onTimeout() {
     myTimer_.stop();
     tooltipUpdateTimer_.stop();
 
-    pBreakNotification_->show();
-    pBreakNotification_->raise();
-    pBreakNotification_->activateWindow();
+    if (evtMon_.isFullScreenAppRunning()) {
+        // restart timer with postpone timeout
+        int t = settings_.value(SettingPostponeTime, SettingPostponeTimeDefVal).toInt();
+        Q_ASSERT(t > 0);
+        restartTimer(t);
+    } else {
+        pBreakNotification_->show();
+        pBreakNotification_->raise();
+        pBreakNotification_->activateWindow();
+    }
  }
 
 void QWorkBreak::onAbout() {
