@@ -121,7 +121,7 @@ void QWorkBreak::onWorkBreakFinished() {
     Q_ASSERT(t > 0);
     restartTimer(t);
 
-    QString msg = TimeFormat.arg(QTime::fromMSecsSinceStartOfDay(t).toString(TimeFormat));
+    QString msg = Message.arg(QTime::fromMSecsSinceStartOfDay(t).toString(TimeFormat));
     showMessage(tr("Work break finished"), msg);
 }
 
