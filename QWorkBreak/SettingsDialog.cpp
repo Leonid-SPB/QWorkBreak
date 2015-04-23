@@ -16,6 +16,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->DurationTimeEdit->setTimeRange(
                 QTime::fromMSecsSinceStartOfDay(0),
                 QTime::fromMSecsSinceStartOfDay(MaxWorkBreakDuration));
+
+    ui->InactivityThresholdEdit->setTimeRange(
+                QTime::fromMSecsSinceStartOfDay(0),
+                QTime::fromMSecsSinceStartOfDay(MaxInactivityThreshold));
 }
 
 SettingsDialog::~SettingsDialog() {
@@ -34,6 +38,11 @@ void SettingsDialog::show() {
     Q_ASSERT(durationMsec <= MaxWorkBreakDuration);
     ui->DurationTimeEdit->setTime(QTime::fromMSecsSinceStartOfDay(durationMsec));
 
+    int inactivityThreshMsec = settings_.value(SettingInactivityThreshold, SettingInactivityThresholdDefVal).toInt();
+    Q_ASSERT(inactivityThreshMsec >= MinInactivityThreshold);
+    Q_ASSERT(inactivityThreshMsec <= MaxInactivityThreshold);
+    ui->InactivityThresholdEdit->setTime(QTime::fromMSecsSinceStartOfDay(inactivityThreshMsec));
+
     update();
     QDialog::show();
 }
@@ -45,6 +54,9 @@ void SettingsDialog::accept() {
 
     int durationMsec = std::max(ui->DurationTimeEdit->time().msecsSinceStartOfDay(), MinWorkBreakDuration);
     settings_.setValue(SettingBreakDuration, QVariant::fromValue(durationMsec));
+
+    int inactivityThreshMsec = std::max(ui->InactivityThresholdEdit->time().msecsSinceStartOfDay(), MinInactivityThreshold);
+    settings_.setValue(SettingInactivityThreshold, QVariant::fromValue(inactivityThreshMsec));
 
     QDialog::accept();
     emit settingsChanged();

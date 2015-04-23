@@ -21,3 +21,5 @@ const int  MinWorkBreakInterval =     30 * 60 * 1000;// ms
 const int  MaxWorkBreakInterval = 4 * 60 * 60 * 1000;// ms
 const int  MinWorkBreakDuration =      1 * 60 * 1000;// ms
 const int  MaxWorkBreakDuration = 1 * 60 * 60 * 1000;// ms
+const int  MinInactivityThreshold =      1 * 60 * 1000;// ms
+const int  MaxInactivityThreshold =     30 * 60 * 1000;// ms

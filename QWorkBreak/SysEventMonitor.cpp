@@ -127,11 +127,13 @@ void SysEventMonitor::onTimeout() {
     if (timeDiffMs < inactThreshMs) {
         if (!activeState_) {
             activeState_ = true;
+            qDebug() << "SysEventMonitor::userStateActive()";
             emit userStateActive();
         }
     } else {
         if (activeState_) {
             activeState_ = false;
+            qDebug() << "SysEventMonitor::userStateInactive()";
             emit userStateInactive();
         }
     }
