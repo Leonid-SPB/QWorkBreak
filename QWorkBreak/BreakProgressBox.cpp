@@ -2,6 +2,7 @@
 #include "BreakProgressBox.hpp"
 #include "ui_BreakProgressBox.h"
 #include "resource.hpp"
+#include "Logger.hpp"
 
 BreakProgressBox::BreakProgressBox(QWidget *parent) :
     QDialog(parent),
@@ -27,12 +28,14 @@ void BreakProgressBox::show() {
     progressUpdateTimer_.start(OneSecond);
 
     QDialog::show();
+    Logger::logEvent(Logger::WorkBreakProgressDisplayed);
 }
 
 void BreakProgressBox::hide() {
     if (isVisible()) {
         QDialog::hide();
         progressUpdateTimer_.stop();
+        Logger::logEvent(Logger::WorkBreakProgressClosed);
         emit breakFinished();
     }
 }

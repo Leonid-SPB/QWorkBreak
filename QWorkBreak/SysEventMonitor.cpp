@@ -1,5 +1,6 @@
 #include "SysEventMonitor.hpp"
 #include "resource.hpp"
+#include "Logger.hpp"
 #include <QDebug>
 #ifdef _WIN32
 #include <windows.h>
@@ -65,27 +66,25 @@ bool SysEventMonitor::nativeEvent(const QByteArray & eventType, void * message, 
         const MSG * const pMsg = static_cast<const MSG * const>(message);
 
         if (pMsg->message == SysEventMessages::DesktopLock) {
-            qDebug() << "SysEventMonitor::desktopLocked()";
+            Logger::logEvent(Logger::WorkstationLocked);
             myTimer_.stop();
             emit desktopLocked();
         } else if (pMsg->message == SysEventMessages::DesktopUnlock) {
-            qDebug() << "SysEventMonitor::desktopUnlocked()";
+            Logger::logEvent(Logger::WorkstationUnlocked);
             restartTimer();
             emit desktopUnlocked();
         } else if (pMsg->message == SysEventMessages::StartScreenSaver) {
-            qDebug() << "SysEventMonitor::screensaverStarted()";
             myTimer_.stop();
             emit screensaverStarted();
         } else if (pMsg->message == SysEventMessages::StopScreenSaver) {
-            qDebug() << "SysEventMonitor::screensaverStopped()";
             restartTimer();
             emit screensaverStopped();
         } else if (pMsg->message == SysEventMessages::PowerModeSusped) {
-            qDebug() << "SysEventMonitor::powerModeSuspended()";
+            Logger::logEvent(Logger::PowerModeSuspended);
             myTimer_.stop();
             emit powerModeSuspended();
         } else if (pMsg->message == SysEventMessages::PowerModeResume) {
-            qDebug() << "SysEventMonitor::powerModeResumed()";
+            Logger::logEvent(Logger::PowerModeResumed);
             restartTimer();
             emit powerModeResumed();
         } else {
@@ -127,13 +126,13 @@ void SysEventMonitor::onTimeout() {
     if (timeDiffMs < inactThreshMs) {
         if (!activeState_) {
             activeState_ = true;
-            qDebug() << "SysEventMonitor::userStateActive()";
+            Logger::logEvent(Logger::UserStateActive);
             emit userStateActive();
         }
     } else {
         if (activeState_) {
             activeState_ = false;
-            qDebug() << "SysEventMonitor::userStateInactive()";
+            Logger::logEvent(Logger::UserStateInactive);
             emit userStateInactive();
         }
     }

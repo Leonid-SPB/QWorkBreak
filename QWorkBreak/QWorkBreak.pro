@@ -24,7 +24,8 @@ HEADERS  += QWorkBreak.hpp\
     BreakProgressBox.hpp \
     SettingsDialog.hpp \
     BreakNotification.hpp \
-    SysEventMonitor.hpp
+    SysEventMonitor.hpp \
+    Logger.hpp
 
 RESOURCES += resource.qrc
 

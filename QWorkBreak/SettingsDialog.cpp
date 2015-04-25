@@ -2,6 +2,7 @@
 #include "SettingsDialog.hpp"
 #include "ui_SettingsDialog.h"
 #include "resource.hpp"
+#include "Logger.hpp"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
@@ -45,6 +46,7 @@ void SettingsDialog::show() {
 
     update();
     QDialog::show();
+    Logger::logEvent(Logger::SettingsDisplayed);
 }
 
 void SettingsDialog::accept() {
@@ -59,6 +61,7 @@ void SettingsDialog::accept() {
     settings_.setValue(SettingInactivityThreshold, QVariant::fromValue(inactivityThreshMsec));
 
     QDialog::accept();
+    Logger::logEvent(Logger::SettingsChanged);
     emit settingsChanged();
 }
 

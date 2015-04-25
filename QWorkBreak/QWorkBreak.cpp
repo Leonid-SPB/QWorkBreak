@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "QWorkBreak.hpp"
+#include "Logger.hpp"
 #include "resource.hpp"
 
 namespace {
@@ -90,6 +91,7 @@ void QWorkBreak::onStop() {
     tooltipUpdateTimer_.stop();
     onTooltipUpdate();
     closeNotificationWindows();
+    Logger::logEvent(Logger::StopNotifications);
 }
 
 void QWorkBreak::onReset() {
@@ -99,6 +101,7 @@ void QWorkBreak::onReset() {
     int t = settings_.value(SettingBreakInterval, SettingBreakDurationDefVal).toInt();
     Q_ASSERT(t > 0);
     restartTimer(t);
+    Logger::logEvent(Logger::ResetNotifications);
 }
 
 void QWorkBreak::onSettings() {
@@ -123,6 +126,7 @@ void QWorkBreak::onWorkBreakFinished() {
 
     QString msg = Message.arg(QTime::fromMSecsSinceStartOfDay(t).toString(TimeFormat));
     showMessage(tr("Work break finished"), msg);
+    Logger::logEvent(Logger::WorkBreakFinished);
 }
 
 void QWorkBreak::onTimeout() {
@@ -134,7 +138,9 @@ void QWorkBreak::onTimeout() {
         int t = settings_.value(SettingPostponeTime, SettingPostponeTimeDefVal).toInt();
         Q_ASSERT(t > 0);
         restartTimer(t);
+        Logger::logEvent(Logger::WorkBreakNotificationPostponed);
     } else {
+        Logger::logEvent(Logger::WorkBreakNotificationDisplayed);
         pBreakNotification_->show();
         pBreakNotification_->raise();
         pBreakNotification_->activateWindow();
