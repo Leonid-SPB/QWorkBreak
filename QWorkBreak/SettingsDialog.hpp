@@ -17,6 +17,12 @@ private:
     Ui::SettingsDialog *ui;
     QSettings settings_;
 
+    // convert milliseconds to minutes
+    int msecToMin(int timeMsec);
+
+    // convert minutes to milliseconds
+    int minToMsec(int timeMin);
+
 public slots:
     void show();
     void accept();
