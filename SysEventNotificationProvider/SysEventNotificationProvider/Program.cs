@@ -34,16 +34,23 @@ namespace SysEventNotificationProvider {
 
         private IntPtr SysEventMonitor_hWnd;
 
+        static Mutex mutex = new Mutex(true, "{8841F6F5-28BA-4092-A746-6E8E7F286C51}");
+
         [STAThread]
         static void Main(string[] args)
         {
             try
             {
-                Application.Run(new Program());
+                // check mutex, allow only one application instance
+                if (mutex.WaitOne(TimeSpan.Zero, true))
+                {
+                    Application.Run(new Program());
+                    mutex.ReleaseMutex();
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Something went wrong, sorry :-(", "QWorkBreak::SysEventMonitor", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Something went wrong, sorry :-(", "QWorkBreak::SysEventProvider", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -96,7 +103,7 @@ namespace SysEventNotificationProvider {
             // 
             // Program
             // 
-            this.Name = "QWorkBreak::SysEventMonitor";
+            this.Name = "QWorkBreak::SysEventProvider";
             this.Opacity = 0D;
             this.ShowIcon = false;
             this.ShowInTaskbar = false;

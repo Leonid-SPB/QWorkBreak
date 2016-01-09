@@ -10,7 +10,7 @@ namespace {
 // window identificator for receiving system event notifications
 const char WindowGuid[] = "QWorkBreak::SysEventMonitor::63e3c948-0472-4b7b-98ef-3e7c81cd5d08";
 
-const char SysEventProviderSvcPath[] = "SysEventNotificationProvider.exe";
+const char SysEventProviderSvcPath[] = "QWBEvtProvdr.exe";
 
 const int ActivityCheckInterval = 10 * 1000; //ms
 
