@@ -1,6 +1,6 @@
 Overview
 ============
-QWorkBreak v1.0 is an open source minimalist Qt based work break reminder utility.
+QWorkBreak v1.1 is an open source minimalist Qt based work break reminder utility.
 
 QWorkBreak shows a work break reminder notification pop-up every hour.
 If user accepts the work break, he will see 5-minute long work break progress bar.

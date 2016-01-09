@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QTimer>
+#include <QDateTime>
 
 #include "BreakNotification.hpp"
 #include "BreakProgressBox.hpp"
@@ -23,6 +24,7 @@ class QWorkBreak : public QSystemTrayIcon {
 
     QTimer myTimer_;
     QTimer tooltipUpdateTimer_;
+    QDateTime lastBreakTime_;
 
     QSettings settings_;
     SysEventMonitor evtMon_;

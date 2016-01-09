@@ -9,7 +9,7 @@
 #include "resource.hpp"
 
 namespace {
-const int TooltipUpdateInterval = 10 * 1000; //ms
+const int TooltipUpdateInterval = 5 * 1000; //ms
 }
 
 QWorkBreak::QWorkBreak(QWidget *parent)
@@ -26,7 +26,7 @@ QWorkBreak::QWorkBreak(QWidget *parent)
     // create about pop-up
     /*@todo use version info const*/
     pAboutBox_ = new QMessageBox(QMessageBox::Information, tr("About"),
-                                 tr("QWorkBreak v1.0\nAn open source minimalist Qt based work break reminder utility"), QMessageBox::Close, nullptr,
+                                 tr("QWorkBreak v1.1\nAn open source minimalist Qt based work break reminder utility"), QMessageBox::Close, nullptr,
                                  Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint |
                                  Qt::WindowCloseButtonHint | Qt::WindowMinimizeButtonHint);
 
@@ -97,6 +97,8 @@ void QWorkBreak::onStop() {
 void QWorkBreak::onReset() {
     closeNotificationWindows();
 
+    lastBreakTime_ = QDateTime::currentDateTimeUtc();
+
     //reset timer
     int t = settings_.value(SettingBreakInterval, SettingBreakDurationDefVal).toInt();
     Q_ASSERT(t > 0);
@@ -118,6 +120,8 @@ void QWorkBreak::onWorkBreakFinished() {
     static const QString Message(tr("Next work break in %1"));
 
     closeNotificationWindows();
+
+    lastBreakTime_ = QDateTime::currentDateTimeUtc();
 
     //reset timer
     int t = settings_.value(SettingBreakInterval, SettingBreakDurationDefVal).toInt();
@@ -208,16 +212,25 @@ void QWorkBreak::onActivatd(QSystemTrayIcon::ActivationReason reason) {
 }
 
 void QWorkBreak::onTooltipUpdate() {
+    static const int MsInDay = 24 * 60 * 60 * 1000;
+    static const QString tooltipFormat(tr("Time left till the next break %1\nTime elapsed since the last break %2"));
+    static const QString timeFormat("hh:mm:ss");
+
     int timeLeft = myTimer_.remainingTime();
     if (timeLeft == -1) { // timer inactive
         setToolTip(tr("Work break reminder stopped"));
     } else {
-        int timePassed = myTimer_.interval() - timeLeft;
-        static const QString tooltipFormat(tr("Time to break %1\nTime passed %2"));
-        static const QString timeFormat("hh:mm:ss");
+        QString timePassedStr;
+        int timePassed = QDateTime::currentDateTimeUtc().toMSecsSinceEpoch() - lastBreakTime_.toMSecsSinceEpoch();
+        if (timePassed > MsInDay) {
+            timePassedStr = tr(">24 hours!");
+        } else {
+            timePassedStr = QTime::fromMSecsSinceStartOfDay(timePassed).toString(timeFormat);
+        }
+
         QString tooltip = tooltipFormat.
                             arg(QTime::fromMSecsSinceStartOfDay(timeLeft).toString(timeFormat)).
-                            arg(QTime::fromMSecsSinceStartOfDay(timePassed).toString(timeFormat));
+                            arg(timePassedStr);
         setToolTip(tooltip);
     }
 }
