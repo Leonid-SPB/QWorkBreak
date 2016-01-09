@@ -56,9 +56,11 @@ namespace SysEventNotificationProvider {
 
         Program() {
             //make form invisible
+            this.FormBorderStyle = FormBorderStyle.None;
             this.ShowInTaskbar = false;
-            this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
-            this.WindowState = FormWindowState.Minimized;
+            this.Load += new EventHandler(Form1_Load);
+
+            this.Name = "QWorkBreak::SysEventProvider";
 
             //find target window
             SysEventMonitor_hWnd = FindWindow(null, WindowGuid);
@@ -97,22 +99,24 @@ namespace SysEventNotificationProvider {
             }
         }
 
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // Program
-            // 
-            this.Name = "QWorkBreak::SysEventProvider";
-            this.Opacity = 0D;
-            this.ShowIcon = false;
-            this.ShowInTaskbar = false;
-            this.ResumeLayout(false);
-        }
-
         protected override void WndProc(ref Message m)
         {
             base.WndProc(ref m);
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var Params = base.CreateParams;
+                Params.ExStyle |= 0x80;
+                return Params;
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.Size = new Size(0, 0);
         }
     }
 }
