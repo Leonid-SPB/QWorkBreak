@@ -33,12 +33,25 @@ namespace SysEventNotificationProvider {
         private static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
 
         private IntPtr SysEventMonitor_hWnd;
-        
+
+        [STAThread]
+        static void Main(string[] args)
+        {
+            try
+            {
+                Application.Run(new Program());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Something went wrong, sorry :-(", "QWorkBreak::SysEventMonitor", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         Program() {
             //make form invisible
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.ShowInTaskbar = false;
-            this.Load += new EventHandler(onFormLoad);
+            this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            this.WindowState = FormWindowState.Minimized;
 
             //find target window
             SysEventMonitor_hWnd = FindWindow(null, WindowGuid);
@@ -61,10 +74,6 @@ namespace SysEventNotificationProvider {
             }
         }
 
-        void onFormLoad(object sender, EventArgs e) {
-            this.Size = new System.Drawing.Size(0, 0);
-        }
-
         private void onSessionSwitch(object sender, SessionSwitchEventArgs e) {
             if (e.Reason == SessionSwitchReason.SessionLock) {
                 SendMessage(SysEventMonitor_hWnd, (int)SysEventMessages.DesktopLock, 0, 0);
@@ -81,13 +90,22 @@ namespace SysEventNotificationProvider {
             }
         }
 
-        [STAThread]
-        static void Main(string[] args) {
-            try {
-                Application.Run(new Program());
-            } catch (Exception ex) {
-                MessageBox.Show("Something went wrong, sorry :-(", "SysEventNotificationProvider", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // Program
+            // 
+            this.Name = "QWorkBreak::SysEventMonitor";
+            this.Opacity = 0D;
+            this.ShowIcon = false;
+            this.ShowInTaskbar = false;
+            this.ResumeLayout(false);
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
         }
     }
 }
