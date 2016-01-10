@@ -16,6 +16,8 @@ const char SettingPostponeTime[]             = "settings/PostponeTime";
 const int  SettingPostponeTimeDefVal         = 5 * 60 * 1000; //ms
 const char SettingInactivityThreshold[]      = "settings/InactivityThreshold";
 const int  SettingInactivityThresholdDefVal  = 10 * 60 * 1000; //ms
+const char SettingPauseInFsApps[]            = "settings/SettingPauseInFsApps";
+const bool SettingPauseInFsAppsDefVal        = false; // 1\0
 
 const int  MinWorkBreakInterval   =     10 * 60 * 1000;// ms
 const int  MaxWorkBreakInterval   = 5 * 60 * 60 * 1000;// ms

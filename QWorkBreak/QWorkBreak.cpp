@@ -137,7 +137,8 @@ void QWorkBreak::onTimeout() {
     myTimer_.stop();
     tooltipUpdateTimer_.stop();
 
-    if (evtMon_.isFullScreenAppRunning()) {
+    bool b = settings_.value(SettingPauseInFsApps, SettingBreakDurationDefVal).toBool();
+    if (b && evtMon_.isFullScreenAppRunning()) {
         // restart timer with postpone timeout
         int t = settings_.value(SettingPostponeTime, SettingPostponeTimeDefVal).toInt();
         Q_ASSERT(t > 0);

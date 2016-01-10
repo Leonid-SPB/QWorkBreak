@@ -53,6 +53,9 @@ void SettingsDialog::show() {
     Q_ASSERT(inactivityThreshMsec <= MaxInactivityThreshold);
     ui->InactivityThresholdEdit->setValue(msecToMin(inactivityThreshMsec));
 
+    bool pauseInFullScreenApps = settings_.value(SettingPauseInFsApps, SettingPauseInFsAppsDefVal).toBool();
+    ui->PauseInFsAppsChk->setChecked(pauseInFullScreenApps);
+
     update();
     QDialog::show();
     Logger::logEvent(Logger::SettingsDisplayed);
@@ -63,6 +66,7 @@ void SettingsDialog::accept() {
     settings_.setValue(SettingBreakInterval, QVariant::fromValue(minToMsec(ui->IntervalTimeEdit->value())));
     settings_.setValue(SettingBreakDuration, QVariant::fromValue(minToMsec(ui->DurationTimeEdit->value())));
     settings_.setValue(SettingInactivityThreshold, QVariant::fromValue(minToMsec(ui->InactivityThresholdEdit->value())));
+    settings_.setValue(SettingPauseInFsApps, QVariant::fromValue(ui->PauseInFsAppsChk->isChecked()));
 
     QDialog::accept();
     Logger::logEvent(Logger::SettingsChanged);
