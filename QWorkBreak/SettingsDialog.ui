@@ -19,7 +19,7 @@
      <x>4</x>
      <y>7</y>
      <width>281</width>
-     <height>81</height>
+     <height>97</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="formLayout">
@@ -36,7 +36,7 @@
     <item row="1" column="0">
      <widget class="QLabel" name="label_2">
       <property name="text">
-       <string>Work break durationl (minutes)</string>
+       <string>Work break duration (minutes)</string>
       </property>
      </widget>
     </item>
@@ -83,6 +83,19 @@
       </property>
      </widget>
     </item>
+    <item row="3" column="0">
+     <widget class="QCheckBox" name="PauseInFsAppsChk">
+      <property name="layoutDirection">
+       <enum>Qt::RightToLeft</enum>
+      </property>
+      <property name="text">
+       <string>Suppress notifications in full screen apps</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QDialogButtonBox" name="buttonBox">
@@ -102,25 +115,6 @@
    </property>
    <property name="standardButtons">
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="PauseInFsAppsChk">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>90</y>
-     <width>221</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="layoutDirection">
-    <enum>Qt::RightToLeft</enum>
-   </property>
-   <property name="text">
-    <string>Suppress notifications in full screen apps</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
    </property>
   </widget>
  </widget>
