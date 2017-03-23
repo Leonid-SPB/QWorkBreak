@@ -5,12 +5,13 @@ QWorkBreak v1.1 is an open source minimalist Qt based work break reminder utilit
 QWorkBreak shows a work break reminder notification pop-up every hour.
 If user accepts the work break, he will see 5-minute long work break progress bar.
 During this time user is encouraged to do some excersises, take a cup of tea/coffe or just walk around.
-User can postpone work break for a 5 minutes if he is really busy or ignore it
-(but notification reappear after some random period of time).
+User can postpone a work break for 5 minutes or choose to ignore it (but the notification reappear after some random period of time).
 
-If the user leaves workstation and locks it, QWorkBreak will suspend notifications.
-When user returns and unlocks workstation, QWorkBreak will restart notification timer (so the next notification
-will appear in one hour).
+When the user locks the workstation or there is no keyboard/mouse activity for 10 minutes, 
+this will be considered as a work break. 
+When the user returns to work, QWorkBreak restarts notification timer (so the next notification will appear in one hour).
+
+Work break interval, duration and inactivity timeout are tunable.
 
 License
 ============
